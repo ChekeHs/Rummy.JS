@@ -24,10 +24,58 @@ class Ficha {
 
 //Clase para el jugador.
 class Jugador {
-  constructor(numeroJugador) {
+  constructor(numeroJugador, fichas) {
     this.numeroJugador = numeroJugador;
-    this.arregloFichas = deckFichas.splice(0, 14);
+    this.fichas = fichas;
   }
+
+  hasPlays = false;
+
+  /* Función para la primera jugada de cualquier jugador.
+ Las condiciones que se deben de cumplir son las siguientes:
+
+  -Las condiciones de fichas que ya se conocen en Rummy.
+  -Que la suma de todas las fichas sea mayor o igual a 30.
+  -El comodín, si se usa en esta instancia, tiene un valor igual a cero.*/
+
+  /*
+Pasos para la primera jugada:
+  1)Preguntarle al jugador cuántas piezas quiere bajar en un stack. La cantidad mínima es de 3.
+
+
+*/
+
+  primeraJugada() {
+    let temporalPositions = [];
+    let nuevaJugada = prompt("¿Harás una nueva jugada? S/N");
+    if (nuevaJugada === "S") {
+      function whileNewArrayNotVerified() {
+        let posicionFichasARemover = prompt(
+          `Menciona la posición de las fichas que quieres retirar, acorde a la cantidad que mencionaste antes, y separado por comas.
+        La cantidad mínima es de tres fichas.`
+        );
+
+        temporalPositions = posicionFichasARemover
+          .split(",")
+          .map(Number)
+          .sort((a, b) => (a > b ? 1 : a < b ? -1 : 0));
+        console.log(temporalPositions);
+
+        if (temporalPositions.length < 3) {
+          alert(`El array no tiene la cantidad mínima de fichas requeridas.
+        Por favor introduce los datos correctamente. `);
+          whileNewArrayNotVerified();
+        }
+
+        // if (posiciones.reduce((a, b) => a + b, 0) >= 30) {
+        //   console.log("El programa ya llega hasta aquí correctamente.");
+        // }
+      }
+      whileNewArrayNotVerified();
+    }
+  }
+
+  jugada() {}
 }
 
 /*Función para inicializar al jugador (en esto me quedé cuando lo subí Xd)
@@ -47,9 +95,14 @@ Básicamente lo que TIENE que hacer es:
  */
 
 function definirCantJugadores() {
-  cantidadJugadores = prompt("Indica la cantidad de jugadores");
-  Math.floor(cantidadJugadores);
+  //Por razones de conveniencia en el proceso de desarrollo, la cantidad de jugadores se mantendrá en 4.
+  //Después se comprobará la lógica para cambiarlos de manera dinámica.
+  //Cuando se llegue a ese punto, descomentar las siguientes líneas:
+  // cantidadJugadores = prompt("Indica la cantidad de jugadores");
+  // Math.floor(cantidadJugadores);
   //console.log(cantidadJugadores);
+
+  cantidadJugadores = 4;
 
   if (cantidadJugadores < 2) {
     alert("La cantidad mínima de jugadores se determinará a 2.");
@@ -62,12 +115,15 @@ function definirCantJugadores() {
 
   inicializarJuego();
   inicializarJugadores();
+  //Mostrar en el HTML todas las fichas revueltas.
+  shuffledDeckDisplay();
 }
 
 function inicializarJugadores() {
   console.log(cantidadJugadores);
   for (let i = 0; i < cantidadJugadores; i++) {
-    jugadores.push(new Jugador(i + 1));
+    const fichas = deckFichas.splice(0, 14);
+    jugadores.push(new Jugador(i + 1, fichas));
     console.log(jugadores[i]);
   }
   // document.getElementById("deck").innerHTML = "";
@@ -92,17 +148,17 @@ function playerDeckDisplay() {
   for (let i = 0; i < jugadores.length; i++) {
     document.getElementById("deck").innerHTML +=
       "<br>Jugador " + (i + 1) + ":<br>";
-    for (let j = 0; j < jugadores[i].arregloFichas.length; j++) {
-      if (jugadores[i].arregloFichas[j].nombre === "comodin") {
+    for (let j = 0; j < jugadores[i].fichas.length; j++) {
+      if (jugadores[i].fichas[j].nombre === "comodin") {
         document.getElementById("deck").innerHTML +=
           '<img src="images/' +
-          jugadores[i].arregloFichas[j].nombre +
+          jugadores[i].fichas[j].nombre +
           '.png" style="max-width: 50px"> </img>';
       } else {
         document.getElementById("deck").innerHTML +=
           '<img src="images/' +
-          jugadores[i].arregloFichas[j].color +
-          jugadores[i].arregloFichas[j].numero +
+          jugadores[i].fichas[j].color +
+          jugadores[i].fichas[j].numero +
           '.png" style="max-width: 50px"> </img>';
       }
       //Las fichas se mostrarán en múltiplos de 14.
@@ -145,6 +201,8 @@ function shuffle(deck) {
 //Las fichas revueltas no se mostrarán en el juego final.
 //Sin embargo, son necesarias para la verificación actual.
 function shuffledDeckDisplay() {
+  document.getElementById("deck").innerHTML +=
+    "<br>Deck de fichas para comer:<br>";
   //Usar la siguiente línea de código para la comprobación del correcto display de los objetos:
   //console.log(deckFichas);
 
@@ -169,6 +227,29 @@ function shuffledDeckDisplay() {
       document.getElementById("deck").innerHTML += "<br>";
     }
   }
+
+  /*Logs para comprobación de la inicialización correcta de las fichas:
+
+  console.log(`Cantidad de fichas restantes en el deck: ${deckFichas.length}`);
+  console.log(
+    `Cantidad de fichas del jugador 1: ${jugadores[0].fichas.length}`
+  );
+  console.log(
+    `Cantidad de fichas del jugador 2: ${jugadores[1].fichas.length}`
+  );
+  console.log(
+    `Cantidad de fichas del jugador 3: ${jugadores[2].fichas.length}`
+  );
+  console.log(
+    `Cantidad de fichas del jugador 4: ${jugadores[3].fichas.length}`
+  );
+  console.log(
+    `Cantidad total de fichas: ${deckFichas.length +
+      jugadores[0].fichas.length +
+      jugadores[1].fichas.length +
+      jugadores[2].fichas.length +
+      jugadores[3].fichas.length} `
+  );*/
 }
 
 //Función que activará las funciones mencionadas al presionar el botón de "Revolver y mostrar" en el HTML.
@@ -192,40 +273,24 @@ function inicializarJuego() {
   //console.log(deckFichas);
 
   //Mostrar en el HTML todas las fichas revueltas.
-  shuffledDeckDisplay();
+  //shuffledDeckDisplay();
 }
 
-/*  Función BASE para el desordenamiento de las fichas.
-    Si algo sale mal, copiar este código y rehacer el desordenamiento.
-    OJO: ESTE CÓDIGO NO HACE EL DESORDENAMIENTO, pero es posible usarlo como base para dicha función.
-    UPDATE: Creo que ya no es necesario.
+//La siguiente función correrá directamente desde la página web.
+definirCantJugadores();
 
-function displayAllCards() {
-    document.getElementById("deck").innerHTML = "";
-    var i, j, k;
-    var colores = ["negro", "azul", "amarillo", "rojo"];
-    for (i = 1; i < 5; i++) {
-        for (j = 1; j < 3; j++) {
-            for (k = 1; k < 14; k++) {
-                deckFichas.push(new Ficha(colores[i - 1], k));
-                //console.log(deckFichas);
-                var numeroFicha = k.toString();
-                document.getElementById("deck").innerHTML +=
-                    '<img src="images/' +
-                    colores[i - 1] +
-                    numeroFicha +
-                    '.png" style="max-width: 50px"> </img>';
-                if (k == 13) {
-                    document.getElementById("deck").innerHTML += "<br>";
-                }
-            }
-        }
+//Condición master para que el juego siga corriendo.
+//Una vez que cualquier jugador llegue a cero fichas, el juego termina.
+while (jugadores.some(jugador => jugador.fichas.length !== 0)) {
+  for (let turnoJugador = 0; turnoJugador < 4; turnoJugador++) {
+    console.log(`Turno del jugador número ${turnoJugador + 1}`);
+
+    if (jugadores[turnoJugador].hasPlays === false) {
+      jugadores[turnoJugador].primeraJugada();
+    } else {
+      jugadores[turnoJugador].jugada();
     }
-    while (i < 7) {
-        deckFichas.push(new Ficha("", "", "comodin"));
-        // console.log(deckFichas);
-        document.getElementById("deck").innerHTML +=
-            '<img src="images/comodin.png" style="max-width: 50px"> </img>';
-        i++;
-    }
-}*/
+  }
+}
+
+//Warning que dirá cuál fue el jugador ganador, además de cómo quedaron los lugares posteriores.
